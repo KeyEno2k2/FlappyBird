@@ -16,3 +16,10 @@ int main(int argc, char** argv)
 
 	return 0;
 }
+
+
+// Funkcja WinMain
+int WinMain(int argc, char* argv[]) {
+    // Wywołaj funkcję main
+    return main(argc, argv);
+}
