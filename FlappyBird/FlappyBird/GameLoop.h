@@ -11,9 +11,13 @@ class GameLoop
 
 		SDL_Window* window;
 		SDL_Renderer* renderer;
+		SDL_Event event1;
+
+		bool GameState;
 
 	public:
 		GameLoop();
+		bool getGameState();
 		void Initialize();
 		void Event();
 		void Render();

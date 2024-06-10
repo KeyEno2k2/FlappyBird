@@ -7,15 +7,17 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	g->Initialize();
-	while (1)
+	while (g->getGameState())
 	{
 		g->Render();
-
+		g->Event();
 	}
 	g->Clear();
 
 	return 0;
 }
+
+
 
 
 // Funkcja WinMain
