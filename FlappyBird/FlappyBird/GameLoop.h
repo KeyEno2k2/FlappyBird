@@ -19,6 +19,7 @@ private:
 
 	SDL_Texture *player;
 	SDL_Rect srcPlayer, destPlayer;
+	SDL_Texture* background;
 
 public:
 	GameLoop();

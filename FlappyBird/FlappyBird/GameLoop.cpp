@@ -33,6 +33,7 @@ void GameLoop::Initialize()
         cout << "Sukces!" << endl;
 		GameState = true;
 		player = TextureManager::Texture("Image/bird2.png", renderer);
+		background = TextureManager::Texture("Image/background.png", renderer);
     }
 }
 
@@ -84,6 +85,7 @@ void GameLoop::Update()
 void GameLoop::Render()
 {
     SDL_RenderClear(renderer);
+	SDL_RenderCopy(renderer, background, NULL, NULL);
 	SDL_RenderCopy(renderer, player, &srcPlayer, &destPlayer);
     SDL_RenderPresent(renderer);
 }
