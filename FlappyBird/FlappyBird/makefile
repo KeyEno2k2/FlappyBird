@@ -5,13 +5,13 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -I. -I/mingw64/include/SDL2
 
 # Linker flags
-LDFLAGS = -L/mingw64/lib -lSDL2 -lSDL2main -mconsole
+LDFLAGS = -L/mingw64/lib -lSDL2 -lSDL2_image -lSDL2main -mconsole
 
 # Executable name
-TARGET = main
+TARGET = FlappyBird
 
 # Source files
-SRCS = main.cpp GameLoop.cpp
+SRCS = main.cpp GameLoop.cpp TextureManager.cpp
 
 # Object files (derived from source files)
 OBJS = $(SRCS:.cpp=.o)
