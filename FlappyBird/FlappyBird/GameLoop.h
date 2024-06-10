@@ -1,6 +1,8 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_image.h>
 #include <iostream>
+#include "TextureManager.h"
 using namespace std;
 
 class GameLoop 
@@ -14,6 +16,8 @@ class GameLoop
 		SDL_Event event1;
 
 		bool GameState;
+
+		SDL_Texture* player;
 
 	public:
 		GameLoop();
