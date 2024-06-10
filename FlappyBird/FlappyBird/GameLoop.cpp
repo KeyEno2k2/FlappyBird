@@ -43,6 +43,7 @@ void GameLoop::Event()
 		GameState = false;
 	}
 
+	//Mouse Events
 	if (event1.type == SDL_MOUSEMOTION)
 	{
 		cout << event1.motion.x << " " << event1.motion.y << endl;
@@ -50,8 +51,18 @@ void GameLoop::Event()
 
 	if (event1.type == SDL_MOUSEBUTTONDOWN)
 	{
-		cout << "Pressed!" << endl;
+		 cout << "Pressed!" << endl;
 	}
+
+	//Keyboard Events
+	if (event1.type == SDL_KEYDOWN)
+	{
+		if (event1.key.keysym.sym == SDLK_SPACE)
+		{
+			cout << "SPACE!" << endl;
+		}
+	}
+
 }
 
 void GameLoop::Render()
