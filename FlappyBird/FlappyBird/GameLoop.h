@@ -5,26 +5,27 @@
 #include "TextureManager.h"
 using namespace std;
 
-class GameLoop 
+class GameLoop
 {
-	private:
-		const int HEIGHT = 640;
-		const int WIDTH = 800;
+private:
+	const int HEIGHT = 640;
+	const int WIDTH = 800;
 
-		SDL_Window* window;
-		SDL_Renderer* renderer;
-		SDL_Event event1;
+	SDL_Window *window;
+	SDL_Renderer *renderer;
+	SDL_Event event1;
 
-		bool GameState;
+	bool GameState;
 
-		SDL_Texture* player;
+	SDL_Texture *player;
+	SDL_Rect srcPlayer, destPlayer;
 
-	public:
-		GameLoop();
-		bool getGameState();
-		void Initialize();
-		void Event();
-		void Render();
-		void Clear();
-
+public:
+	GameLoop();
+	bool getGameState();
+	void Update();
+	void Initialize();
+	void Event();
+	void Render();
+	void Clear();
 };

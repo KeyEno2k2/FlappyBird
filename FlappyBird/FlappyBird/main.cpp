@@ -11,6 +11,7 @@ int main(int argc, char** argv)
 	{
 		g->Render();
 		g->Event();
+		g->Update();
 	}
 	g->Clear();
 
