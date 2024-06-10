@@ -42,6 +42,16 @@ void GameLoop::Event()
 	{
 		GameState = false;
 	}
+
+	if (event1.type == SDL_MOUSEMOTION)
+	{
+		cout << event1.motion.x << " " << event1.motion.y << endl;
+	}
+
+	if (event1.type == SDL_MOUSEBUTTONDOWN)
+	{
+		cout << "Pressed!" << endl;
+	}
 }
 
 void GameLoop::Render()
