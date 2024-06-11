@@ -1,16 +1,21 @@
 #include "GameLoop.h"
 
-GameLoop::GameLoop()
-{
+GameLoop::GameLoop() {
     window = NULL;
     renderer = NULL;
-	GameState = false;
+    GameState = false;
+    // Source Dimension:
+    p.setSource(0, 0, 90, 64);
+    // Destination Dimension
+    p.setDest(10, 20, 90, 64);
 }
+
 
 bool GameLoop::getGameState()
 {
 	return GameState;
 }
+
 void GameLoop::Initialize()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -32,7 +37,7 @@ void GameLoop::Initialize()
     } else {
         cout << "Sukces!" << endl;
 		GameState = true;
-		player = TextureManager::Texture("Image/bird2.png", renderer);
+		p.CreateTexture("Image/bird2.png", renderer, p.getTexture());
 		background = TextureManager::Texture("Image/background.png", renderer);
     }
 }
@@ -69,16 +74,6 @@ void GameLoop::Event()
 
 void GameLoop::Update()
 {
-	// Source Dimension:
-	srcPlayer.h = 64;
-	srcPlayer.w = 90;
-	srcPlayer.x = srcPlayer.y = 0;
-
-	// Destination Dimension
-	destPlayer.h = 64;
-	destPlayer.w = 90;
-	destPlayer.x = 10;
-	destPlayer.y++;
 
 }
 
@@ -86,7 +81,7 @@ void GameLoop::Render()
 {
     SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, background, NULL, NULL);
-	SDL_RenderCopy(renderer, player, &srcPlayer, &destPlayer);
+	p.Render(renderer, p.getTexture(), p.getSrc(), p.getDest());
     SDL_RenderPresent(renderer);
 }
 
