@@ -5,6 +5,8 @@ GameLoop::GameLoop()
     window = NULL;
     renderer = NULL;
 	GameState = false;
+	birdVelocity = 0.0f;
+	gravity = 0.3f;
 }
 
 GameLoop::~GameLoop()
@@ -58,11 +60,13 @@ void GameLoop::Event()
 	//Mouse Events
 	if (event1.type == SDL_MOUSEMOTION)
 	{
+
 		cout << event1.motion.x << " " << event1.motion.y << endl;
 	}
 
 	if (event1.type == SDL_MOUSEBUTTONDOWN)
 	{
+		birdVelocity = -6.0f;
 		 cout << "Pressed!" << endl;
 	}
 
@@ -71,6 +75,7 @@ void GameLoop::Event()
 	{
 		if (event1.key.keysym.sym == SDLK_SPACE)
 		{
+			birdVelocity = -6.0f;
 			cout << "SPACE!" << endl;
 		}
 	}
@@ -79,6 +84,8 @@ void GameLoop::Event()
 
 void GameLoop::Update()
 {
+	destPlayer.y += static_cast<int>(birdVelocity);
+	birdVelocity += gravity;
 	// Source Dimension:
 	srcPlayer.h = 64;
 	srcPlayer.w = 90;

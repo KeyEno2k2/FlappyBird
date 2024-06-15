@@ -16,6 +16,7 @@ private:
 	const int HEIGHT = 640;
 	const int WIDTH = 800;
 	vector<Pipe*> pipes;
+	
 
 	SDL_Window *window;
 	SDL_Renderer *renderer;
@@ -23,6 +24,9 @@ private:
 
 	bool GameState;
 	int score;
+
+	float birdVelocity;
+	float gravity;
 
 	SDL_Texture *player;
 	SDL_Rect srcPlayer, destPlayer;
