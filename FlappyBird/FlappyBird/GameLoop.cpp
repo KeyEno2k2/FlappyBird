@@ -7,6 +7,7 @@ GameLoop::GameLoop()
 	GameState = false;
 	birdVelocity = 0.0f;
 	gravity = 0.3f;
+	lastPipeTime = 0;
 }
 
 GameLoop::~GameLoop()
@@ -92,14 +93,33 @@ void GameLoop::Update()
 	srcPlayer.x = srcPlayer.y = 0;
 
 	// Destination Dimension
-	destPlayer.h = 64;
-	destPlayer.w = 90;
+	destPlayer.h = 32;
+	destPlayer.w = 45;
 	destPlayer.x = 10;
 	destPlayer.y++;
+
+	if (SDL_GetTicks() - lastPipeTime > 2000)
+	{
+		int y = rand() % (HEIGHT - 320);
+		pipes.push_back(new Pipe(renderer, WIDTH, y));
+		lastPipeTime = SDL_GetTicks();
+	}
 
 	for (auto pipe : pipes)
 	{
 		pipe -> Update();
+	}
+
+	auto iter = pipes.begin();
+	while (iter != pipes.end())
+	{
+		if ((*iter) -> GetX() + (*iter) -> GetWidth() < 0)
+		{
+			delete *iter;
+			iter = pipes.erase(iter);
+		} else {
+			++iter;
+		}
 	}
 
 	for (auto pipe : pipes)

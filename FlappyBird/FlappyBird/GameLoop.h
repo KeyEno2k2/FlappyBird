@@ -16,7 +16,7 @@ private:
 	const int HEIGHT = 640;
 	const int WIDTH = 800;
 	vector<Pipe*> pipes;
-	
+	int lastPipeTime;
 
 	SDL_Window *window;
 	SDL_Renderer *renderer;

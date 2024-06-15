@@ -13,6 +13,9 @@ public:
     SDL_Rect& GetTopRect();
     SDL_Rect& GetBottomRect();
 
+    int GetX() const;
+    int GetWidth() const;
+
 private:
     SDL_Texture* texture;
     SDL_Renderer* renderer;

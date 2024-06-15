@@ -22,7 +22,7 @@ void Pipe::Update() {
 }
 
 void Pipe::Render() {
-    SDL_RenderCopy(renderer, texture, NULL, &topRect);
+    SDL_RenderCopyEx(renderer, texture, NULL, &topRect, 180, NULL, SDL_FLIP_NONE);
     SDL_RenderCopy(renderer, texture, NULL, &bottomRect);
 }
 
@@ -32,4 +32,13 @@ SDL_Rect& Pipe::GetTopRect() {
 
 SDL_Rect& Pipe::GetBottomRect() {
     return bottomRect;
+}
+
+int Pipe::GetX() const
+{
+    return topRect.x;
+}
+
+int Pipe::GetWidth() const{
+    return topRect.w;
 }
