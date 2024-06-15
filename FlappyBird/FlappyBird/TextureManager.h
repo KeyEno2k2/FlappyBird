@@ -1,3 +1,6 @@
+#ifndef TEXTUREMANAGER_H
+#define TEXTUREMANAGER_H
+
 #pragma once
 #include "GameLoop.h"
 #include <SDL.h>
@@ -9,3 +12,5 @@ class TextureManager
 public:
     static SDL_Texture *Texture(const char *filelocation, SDL_Renderer *ren);
 };
+
+#endif

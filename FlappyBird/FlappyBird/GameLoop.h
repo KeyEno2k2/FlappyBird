@@ -1,8 +1,13 @@
+#ifndef GAMELOOP_H
+#define GAMELOOP_H
+
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
 #include "TextureManager.h"
+#include <vector>
+#include "Pipe.h"
 using namespace std;
 
 class GameLoop
@@ -10,12 +15,14 @@ class GameLoop
 private:
 	const int HEIGHT = 640;
 	const int WIDTH = 800;
+	vector<Pipe*> pipes;
 
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	SDL_Event event1;
 
 	bool GameState;
+	int score;
 
 	SDL_Texture *player;
 	SDL_Rect srcPlayer, destPlayer;
@@ -23,6 +30,7 @@ private:
 
 public:
 	GameLoop();
+	~GameLoop();
 	bool getGameState();
 	void Update();
 	void Initialize();
@@ -30,3 +38,5 @@ public:
 	void Render();
 	void Clear();
 };
+
+#endif 

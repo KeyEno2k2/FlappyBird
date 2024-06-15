@@ -7,10 +7,19 @@ GameLoop::GameLoop()
 	GameState = false;
 }
 
+GameLoop::~GameLoop()
+{
+	for (auto pipe: pipes)
+	{
+		delete pipe;
+	}
+}
+
 bool GameLoop::getGameState()
 {
 	return GameState;
 }
+
 void GameLoop::Initialize()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -32,8 +41,9 @@ void GameLoop::Initialize()
     } else {
         cout << "Sukces!" << endl;
 		GameState = true;
-		player = TextureManager::Texture("Image/bird2.png", renderer);
+		player = TextureManager::Texture("Image/yellowbird2.png", renderer);
 		background = TextureManager::Texture("Image/background.png", renderer);
+		pipes.push_back(new Pipe(renderer, 500, 200));
     }
 }
 
@@ -80,6 +90,19 @@ void GameLoop::Update()
 	destPlayer.x = 10;
 	destPlayer.y++;
 
+	for (auto pipe : pipes)
+	{
+		pipe -> Update();
+	}
+
+	for (auto pipe : pipes)
+	{
+		if (SDL_HasIntersection(&destPlayer, &pipe ->GetTopRect()) || SDL_HasIntersection(&destPlayer, &pipe -> GetBottomRect()))
+		{
+			GameState = false;
+		}
+	}
+
 }
 
 void GameLoop::Render()
@@ -87,6 +110,10 @@ void GameLoop::Render()
     SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, background, NULL, NULL);
 	SDL_RenderCopy(renderer, player, &srcPlayer, &destPlayer);
+	for (auto pipe : pipes)
+	{
+		pipe -> Render();
+	}
     SDL_RenderPresent(renderer);
 }
 
