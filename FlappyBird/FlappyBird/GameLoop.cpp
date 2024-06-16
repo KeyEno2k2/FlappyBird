@@ -1,26 +1,30 @@
 #include "GameLoop.h"
+#include "TextureManager.h"
+#include <cstdlib>
+#include <ctime>
 
 GameLoop::GameLoop()
 {
     window = NULL;
     renderer = NULL;
-	GameState = false;
-	birdVelocity = 0.0f;
-	gravity = 0.3f;
-	lastPipeTime = 0;
+    GameState = false;
+    birdVelocity = 0.0f;
+    gravity = 0.3f;
+    lastPipeTime = 0;
+    isGameOver = false;
 }
 
 GameLoop::~GameLoop()
 {
-	for (auto pipe: pipes)
-	{
-		delete pipe;
-	}
+    for (auto pipe: pipes)
+    {
+        delete pipe;
+    }
 }
 
 bool GameLoop::getGameState()
 {
-	return GameState;
+    return GameState;
 }
 
 void GameLoop::Initialize()
@@ -43,104 +47,142 @@ void GameLoop::Initialize()
         window = NULL;
     } else {
         cout << "Sukces!" << endl;
-		GameState = true;
-		player = TextureManager::Texture("Image/yellowbird2.png", renderer);
-		background = TextureManager::Texture("Image/background.png", renderer);
-		pipes.push_back(new Pipe(renderer, 500, 200));
+        GameState = true;
+        player = TextureManager::Texture("Image/yellowbird2.png", renderer);
+        background = TextureManager::Texture("Image/background.png", renderer);
+        gameOverTexture = TextureManager::Texture("Image/gameover.png", renderer);
+        if (!gameOverTexture) {
+            cout << "Failed to load Gameover.png" << endl;
+        }
+        gameOverRect.w = 192;
+        gameOverRect.h = 42;
+        gameOverRect.x = (WIDTH - gameOverRect.w) / 2;
+        gameOverRect.y = (HEIGHT - gameOverRect.h) / 2;
+        pipes.push_back(new Pipe(renderer, 500, 200));
     }
 }
 
 void GameLoop::Event()
 {
-	SDL_PollEvent(&event1);
-	if (event1.type == SDL_QUIT)
-	{
-		GameState = false;
-	}
+    SDL_PollEvent(&event1);
+    if (event1.type == SDL_QUIT)
+    {
+        GameState = false;
+    }
 
-	//Mouse Events
-	if (event1.type == SDL_MOUSEMOTION)
-	{
+    if (isGameOver)
+    {
+        if (event1.type == SDL_MOUSEBUTTONDOWN)
+        {
+            int x = event1.button.x;
+            int y = event1.button.y;
+            if (x >= gameOverRect.x && x <= gameOverRect.x + gameOverRect.w && y >= gameOverRect.y && y <= gameOverRect.y + gameOverRect.h)
+            {
+                ResetGame();
+            }
+        }
+        return;
+    }
 
-		cout << event1.motion.x << " " << event1.motion.y << endl;
-	}
+    // Mouse Events
+    if (event1.type == SDL_MOUSEMOTION)
+    {
+        cout << event1.motion.x << " " << event1.motion.y << endl;
+    }
 
-	if (event1.type == SDL_MOUSEBUTTONDOWN)
-	{
-		birdVelocity = -6.0f;
-		 cout << "Pressed!" << endl;
-	}
+    if (event1.type == SDL_MOUSEBUTTONDOWN)
+    {
+        birdVelocity = -6.0f;
+        cout << "Pressed!" << endl;
+    }
 
-	//Keyboard Events
-	if (event1.type == SDL_KEYDOWN)
-	{
-		if (event1.key.keysym.sym == SDLK_SPACE)
-		{
-			birdVelocity = -6.0f;
-			cout << "SPACE!" << endl;
-		}
-	}
-
+    // Keyboard Events
+    if (event1.type == SDL_KEYDOWN)
+    {
+        if (event1.key.keysym.sym == SDLK_SPACE)
+        {
+            birdVelocity = -6.0f;
+            cout << "SPACE!" << endl;
+        }
+    }
 }
 
 void GameLoop::Update()
 {
-	destPlayer.y += static_cast<int>(birdVelocity);
-	birdVelocity += gravity;
-	// Source Dimension:
-	srcPlayer.h = 64;
-	srcPlayer.w = 90;
-	srcPlayer.x = srcPlayer.y = 0;
+    if (isGameOver) return;
 
-	// Destination Dimension
-	destPlayer.h = 32;
-	destPlayer.w = 45;
-	destPlayer.x = 10;
-	destPlayer.y++;
+    destPlayer.y += static_cast<int>(birdVelocity);
+    birdVelocity += gravity;
 
-	if (SDL_GetTicks() - lastPipeTime > 2000)
-	{
-		int y = rand() % (HEIGHT - 320);
-		pipes.push_back(new Pipe(renderer, WIDTH, y));
-		lastPipeTime = SDL_GetTicks();
-	}
+    // Source Dimension:
+    srcPlayer.h = 64;
+    srcPlayer.w = 90;
+    srcPlayer.x = srcPlayer.y = 0;
 
-	for (auto pipe : pipes)
-	{
-		pipe -> Update();
-	}
+    // Destination Dimension
+    destPlayer.h = 32;
+    destPlayer.w = 45;
+    destPlayer.x = 10;
 
-	auto iter = pipes.begin();
-	while (iter != pipes.end())
-	{
-		if ((*iter) -> GetX() + (*iter) -> GetWidth() < 0)
-		{
-			delete *iter;
-			iter = pipes.erase(iter);
-		} else {
-			++iter;
-		}
-	}
+    if (SDL_GetTicks() - lastPipeTime > 2000)
+    {
+        int y = rand() % (HEIGHT - 320);
+        pipes.push_back(new Pipe(renderer, WIDTH, y));
+        lastPipeTime = SDL_GetTicks();
+    }
 
-	for (auto pipe : pipes)
-	{
-		if (SDL_HasIntersection(&destPlayer, &pipe ->GetTopRect()) || SDL_HasIntersection(&destPlayer, &pipe -> GetBottomRect()))
-		{
-			GameState = false;
-		}
-	}
+    for (auto pipe : pipes)
+    {
+        pipe->Update();
+    }
 
+    auto iter = pipes.begin();
+    while (iter != pipes.end())
+    {
+        if ((*iter)->GetX() + (*iter)->GetWidth() < 0)
+        {
+            delete *iter;
+            iter = pipes.erase(iter);
+        }
+        else
+        {
+            ++iter;
+        }
+    }
+
+    for (auto pipe : pipes)
+    {
+        if (SDL_HasIntersection(&destPlayer, &pipe->GetTopRect()) || SDL_HasIntersection(&destPlayer, &pipe->GetBottomRect()))
+        {
+            isGameOver = true;
+            cout << "Collision detected. Game Over!" << endl;
+            return;
+        }
+    }
+
+    if (destPlayer.y + destPlayer.h > HEIGHT || destPlayer.y < 0)
+    {
+        isGameOver = true;
+        cout << "Bird out of bounds. Game Over!" << endl;
+    }
 }
 
 void GameLoop::Render()
 {
     SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, background, NULL, NULL);
-	SDL_RenderCopy(renderer, player, &srcPlayer, &destPlayer);
-	for (auto pipe : pipes)
-	{
-		pipe -> Render();
-	}
+    SDL_RenderCopy(renderer, background, NULL, NULL);
+    SDL_RenderCopy(renderer, player, &srcPlayer, &destPlayer);
+    for (auto pipe : pipes)
+    {
+        pipe->Render();
+    }
+
+    if (isGameOver)
+    {
+        SDL_RenderCopy(renderer, gameOverTexture, NULL, &gameOverRect);
+        cout << "Rendering Game Over screen" << endl;
+    }
+
     SDL_RenderPresent(renderer);
 }
 
@@ -153,4 +195,15 @@ void GameLoop::Clear()
         SDL_DestroyWindow(window);
     }
     SDL_Quit();
+}
+
+void GameLoop::ResetGame()
+{
+    isGameOver = false;
+    birdVelocity = 0.0f;
+    destPlayer.y = HEIGHT / 2;
+    pipes.clear();
+    lastPipeTime = SDL_GetTicks();
+    pipes.push_back(new Pipe(renderer, 500, 200));
+    cout << "Game reset" << endl;
 }

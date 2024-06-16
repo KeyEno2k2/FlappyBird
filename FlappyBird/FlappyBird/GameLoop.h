@@ -32,6 +32,10 @@ private:
 	SDL_Rect srcPlayer, destPlayer;
 	SDL_Texture* background;
 
+	SDL_Texture* gameOverTexture;
+	SDL_Rect gameOverRect;
+	bool isGameOver;
+
 public:
 	GameLoop();
 	~GameLoop();
@@ -41,6 +45,7 @@ public:
 	void Event();
 	void Render();
 	void Clear();
+	void ResetGame();
 };
 
 #endif 
