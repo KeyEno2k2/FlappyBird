@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
 
 GameLoop::GameLoop()
 {
@@ -58,7 +59,21 @@ void GameLoop::Initialize()
         gameOverRect.h = 42;
         gameOverRect.x = (WIDTH - gameOverRect.w) / 2;
         gameOverRect.y = (HEIGHT - gameOverRect.h) / 2;
+        LoadNumberTextures();
+        score = 0;
         pipes.push_back(new Pipe(renderer, 500, 200));
+    }
+}
+
+void GameLoop::LoadNumberTextures() {
+    for (int i = 0; i < 10; i++) {
+        std::string filename = "Image/" + std::to_string(i) + ".png";
+        numberTextures[i] = TextureManager::Texture(filename.c_str(), renderer);
+        if (!numberTextures[i]) {
+            cout << "Failed to load " << filename << endl;
+        }
+        numberRects[i].w = 24;
+        numberRects[i].h = 36;
     }
 }
 
@@ -84,14 +99,12 @@ void GameLoop::Event()
         return;
     }
 
-	//Mouse Events
     if (event1.type == SDL_MOUSEBUTTONDOWN)
     {
         birdVelocity = -6.0f;
         cout << "Pressed!" << endl;
     }
 
-    // Keyboard Events
     if (event1.type == SDL_KEYDOWN)
     {
         if (event1.key.keysym.sym == SDLK_SPACE)
@@ -109,12 +122,10 @@ void GameLoop::Update()
     destPlayer.y += static_cast<int>(birdVelocity);
     birdVelocity += gravity;
 
-    // Source Dimension:
     srcPlayer.h = 64;
     srcPlayer.w = 90;
     srcPlayer.x = srcPlayer.y = 0;
 
-    // Destination Dimension
     destPlayer.h = 32;
     destPlayer.w = 45;
     destPlayer.x = 10;
@@ -138,6 +149,7 @@ void GameLoop::Update()
         {
             delete *iter;
             iter = pipes.erase(iter);
+            score++;
         }
         else
         {
@@ -162,6 +174,21 @@ void GameLoop::Update()
     }
 }
 
+void GameLoop::RenderScore() {
+    std::stringstream ss;
+    ss << score;
+    std::string scoreStr = ss.str();
+    int x = 10;
+    int y = 10;
+    for (char c : scoreStr) {
+        int digit = c - '0';
+        numberRects[digit].x = x;
+        numberRects[digit].y = y;
+        SDL_RenderCopy(renderer, numberTextures[digit], NULL, &numberRects[digit]);
+        x += numberRects[digit].w + 5;
+    }
+}
+
 void GameLoop::Render()
 {
     SDL_RenderClear(renderer);
@@ -171,6 +198,8 @@ void GameLoop::Render()
     {
         pipe->Render();
     }
+
+    RenderScore();
 
     if (isGameOver)
     {
@@ -199,6 +228,7 @@ void GameLoop::ResetGame()
     destPlayer.y = HEIGHT / 2;
     pipes.clear();
     lastPipeTime = SDL_GetTicks();
+    score = 0;
     pipes.push_back(new Pipe(renderer, 500, 200));
     cout << "Game reset" << endl;
 }

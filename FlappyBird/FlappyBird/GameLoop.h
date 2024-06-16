@@ -36,6 +36,11 @@ private:
 	SDL_Rect gameOverRect;
 	bool isGameOver;
 
+	SDL_Texture* numberTextures[10];
+	SDL_Rect numberRects[10];
+	void LoadNumberTextures();
+	void RenderScore();
+
 public:
 	GameLoop();
 	~GameLoop();
