@@ -84,12 +84,7 @@ void GameLoop::Event()
         return;
     }
 
-    // Mouse Events
-    if (event1.type == SDL_MOUSEMOTION)
-    {
-        cout << event1.motion.x << " " << event1.motion.y << endl;
-    }
-
+	//Mouse Events
     if (event1.type == SDL_MOUSEBUTTONDOWN)
     {
         birdVelocity = -6.0f;

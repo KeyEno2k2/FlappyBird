@@ -2,10 +2,10 @@
 #include "TextureManager.h"
 
 Pipe::Pipe(SDL_Renderer* renderer, int x, int y) : renderer(renderer) {
-    texture = TextureManager::Texture("Image/pipe-green.png", renderer);
+    texture = TextureManager::Texture("Image/pipe-greenv2.png", renderer);
 
     topRect.w = bottomRect.w = 52; // Szerokość rury
-    topRect.h = bottomRect.h = 320; // Wysokość rury
+    topRect.h = bottomRect.h = 751; // Wysokość rury
 
     topRect.x = bottomRect.x = x;
     topRect.y = y - topRect.h;
