@@ -2,7 +2,7 @@
 #include "TextureManager.h"
 #include <cstdlib>
 #include <ctime>
-#include <sstream>
+#include <sstream>  // Dodaj ten nagłówek, aby móc korzystać z stringstream
 
 GameLoop::GameLoop()
 {
@@ -13,6 +13,8 @@ GameLoop::GameLoop()
     gravity = 0.3f;
     lastPipeTime = 0;
     isGameOver = false;
+    currentFrame = 0;
+    lastFrameTime = 0;
 }
 
 GameLoop::~GameLoop()
@@ -49,7 +51,7 @@ void GameLoop::Initialize()
     } else {
         cout << "Sukces!" << endl;
         GameState = true;
-        player = TextureManager::Texture("Image/yellowbird2.png", renderer);
+        LoadBirdTextures();
         background = TextureManager::Texture("Image/background.png", renderer);
         gameOverTexture = TextureManager::Texture("Image/gameover.png", renderer);
         if (!gameOverTexture) {
@@ -62,18 +64,33 @@ void GameLoop::Initialize()
         LoadNumberTextures();
         score = 0;
         pipes.push_back(new Pipe(renderer, 500, 200));
+        lastFrameTime = SDL_GetTicks();
+    }
+}
+
+void GameLoop::LoadBirdTextures() {
+    birdTextures[0] = TextureManager::Texture("Image/yellowbird1.png", renderer);
+    birdTextures[1] = TextureManager::Texture("Image/yellowbird2.png", renderer);
+    birdTextures[2] = TextureManager::Texture("Image/yellowbird3.png", renderer);
+
+    for (int i = 0; i < 3; i++) {
+        if (!birdTextures[i]) {
+            cout << "Failed to load bird texture " << i + 1 << endl;
+        }
     }
 }
 
 void GameLoop::LoadNumberTextures() {
     for (int i = 0; i < 10; i++) {
-        std::string filename = "Image/" + std::to_string(i) + ".png";
+        std::stringstream ss;
+        ss << "Image/" << i << ".png";
+        std::string filename = ss.str();
         numberTextures[i] = TextureManager::Texture(filename.c_str(), renderer);
         if (!numberTextures[i]) {
             cout << "Failed to load " << filename << endl;
         }
-        numberRects[i].w = 24;
-        numberRects[i].h = 36;
+        numberRects[i].w = 24; // Szerokość obrazka cyfry
+        numberRects[i].h = 36; // Wysokość obrazka cyfry
     }
 }
 
@@ -85,18 +102,9 @@ void GameLoop::Event()
         GameState = false;
     }
 
-    if (isGameOver)
+    if (isGameOver && event1.type == SDL_MOUSEBUTTONDOWN)
     {
-        if (event1.type == SDL_MOUSEBUTTONDOWN)
-        {
-            int x = event1.button.x;
-            int y = event1.button.y;
-            if (x >= gameOverRect.x && x <= gameOverRect.x + gameOverRect.w && y >= gameOverRect.y && y <= gameOverRect.y + gameOverRect.h)
-            {
-                ResetGame();
-            }
-        }
-        return;
+        ResetGame();
     }
 
     if (event1.type == SDL_MOUSEBUTTONDOWN)
@@ -115,9 +123,19 @@ void GameLoop::Event()
     }
 }
 
+void GameLoop::UpdateBirdAnimation() {
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime - lastFrameTime >= 100) { // Zmiana ramki co 100 ms
+        currentFrame = (currentFrame + 1) % 3;
+        lastFrameTime = currentTime;
+    }
+}
+
 void GameLoop::Update()
 {
     if (isGameOver) return;
+
+    UpdateBirdAnimation(); // Aktualizacja animacji ptaka
 
     destPlayer.y += static_cast<int>(birdVelocity);
     birdVelocity += gravity;
@@ -149,7 +167,7 @@ void GameLoop::Update()
         {
             delete *iter;
             iter = pipes.erase(iter);
-            score++;
+            score++; // Inkrementacja wyniku
         }
         else
         {
@@ -178,14 +196,14 @@ void GameLoop::RenderScore() {
     std::stringstream ss;
     ss << score;
     std::string scoreStr = ss.str();
-    int x = 10;
+    int x = 10;  // Zaczynamy od lewej strony ekranu
     int y = 10;
     for (char c : scoreStr) {
         int digit = c - '0';
         numberRects[digit].x = x;
         numberRects[digit].y = y;
         SDL_RenderCopy(renderer, numberTextures[digit], NULL, &numberRects[digit]);
-        x += numberRects[digit].w + 5;
+        x += numberRects[digit].w + 5; // Przesuwamy się w prawo dla kolejnej cyfry
     }
 }
 
@@ -193,7 +211,7 @@ void GameLoop::Render()
 {
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, background, NULL, NULL);
-    SDL_RenderCopy(renderer, player, &srcPlayer, &destPlayer);
+    SDL_RenderCopy(renderer, birdTextures[currentFrame], &srcPlayer, &destPlayer); // Użyj odpowiedniej ramki animacji
     for (auto pipe : pipes)
     {
         pipe->Render();
