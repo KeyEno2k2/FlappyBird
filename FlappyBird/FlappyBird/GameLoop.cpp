@@ -223,6 +223,7 @@ void GameLoop::Render()
     {
         SDL_RenderCopy(renderer, gameOverTexture, NULL, &gameOverRect);
         cout << "Rendering Game Over screen" << endl;
+        RenderScore();
     }
 
     SDL_RenderPresent(renderer);
